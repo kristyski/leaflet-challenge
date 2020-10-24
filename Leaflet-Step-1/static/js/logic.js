@@ -1,6 +1,6 @@
 // Create map object
 var myMap = L.map("map", {
-    center: [45.5051, -122.6750], //where?
+    center: [45.5051, -122.6750], //where should I center?
     zoom: 8
   });
   
@@ -14,6 +14,12 @@ var myMap = L.map("map", {
     accessToken: API_KEY
   }).addTo(myMap);
   
+// Define a markerSize function that will give each earthquake a different radius based on its magnitude
+  function markerSize(mag) {
+  // return population / 40;
+  return (Math.sqrt(mag)*100);
+  }
+
   // Use this link to get the geojson data.  I used all earthquakes in the past 7 days
   let earthquakes = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
   
@@ -25,15 +31,21 @@ var myMap = L.map("map", {
 
   // / does this add data to each marker? Loop through the cities array and create one marker for each city object
 for (var i = 0; i < earthquakes.length; i++) {
-  L.circle(earthquakes[i].location, {
+  L.circle(feature.geometry.coordinates[2], {
     fillOpacity: 0.75,
     color: "white",
     fillColor: "purple",
-    // Setting our circle's radius equal to the output of our markerSize function
-    // This will make our marker's size proportionate to its population
-    radius: markerSize(earthquakes[i].magnitude)
+    // Set circle's radius equal to the output of markerSize function
+    // This will make marker's size proportionate to its population
+    radius: markerSize(feature.properties.mag*5)
   }).bindPopup("<h1>" + cities[i].name + "</h1> <hr> <h3>Population: " + cities[i].population + "</h3>").addTo(myMap);
 };
+
+  //send earthquake layer to createMap function
+  createmap(earthquakes);
+
+// function createMap(earthquakes);
+
 
   // / THIS IS JUST A TEST Create a new marker
   // Pass in some initial options, and then add it to the map using the addTo method
